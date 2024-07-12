@@ -327,7 +327,7 @@ case ('beam')
   ix_branch = parse_branch(line, u, .false., err); if (err) return
 
   nl=incr(nl); write (li(nl), lmt) 'always_reinit;LOGIC;T;',           u%beam%always_reinit
-  nl=incr(nl); write (li(nl), lmt) 'track_beam_in_universe;LOGIC;T;',  u%beam%track_beam_in_universe
+  nl=incr(nl); write (li(nl), lmt) 'track_beam_in_universe;LOGIC;F;',  u%beam%track_beam_in_universe
   nl=incr(nl); write (li(nl), amt) 'saved_at;STR;T;',                  trim(u%beam%saved_at)
   nl=incr(nl); write (li(nl), amt) 'dump_at;STR;T;',                   trim(u%beam%dump_at)
   nl=incr(nl); write (li(nl), amt) 'dump_file;STR;T;',                 trim(u%beam%dump_file)
@@ -3555,7 +3555,6 @@ case ('ele:photon')
     nl=incr(nl); write (li(nl), lmt) 'has#pixel;LOGIC;F;',  (allocated(ele%photon%pixel%pt))
     nl=incr(nl); write (li(nl), lmt) 'has#material;LOGIC;F;', &
                            (attribute_name(ele, material_type$) == 'MATERIAL_TYPE' .or. ele%key == crystal$)
-    nl=incr(nl); write (li(nl), amt) 'grid#type;ENUM;F;',  trim(surface_grid_type_name(ele%photon%grid%type))
 
   case ('material')
     if (ele%key == multilayer_mirror$) then
