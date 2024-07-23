@@ -655,7 +655,7 @@ type tao_global_struct
   integer :: random_seed = -1                    ! Use system clock by default
   integer :: n_top10_merit = 10                  ! Number of top merit constraints to print.
   integer :: srdt_gen_n_slices = 10              ! Number times to slice elements for summation RDT calculation
-  integer :: datum_err_messages_max = 10         ! Maximum number of error messages per cycle.
+  integer :: datum_err_messages_max = 10         ! Maximum number of error messages per call to lattice_calc.
   integer :: srdt_sxt_n_slices = 20              ! Number times to slice sextupoles for summation RDT calculation
   logical :: srdt_use_cache = .true.             ! Create cache for SRDT calculations.  Can use lots of memory if srdt_*_n_slices large.
   character(12) :: quiet = 'off'                 ! "all", or "output". Print I/O when running a command file?
@@ -1008,8 +1008,8 @@ end type
 ! Keep data and plotting separate since when optimizing will only do a calc if the data needs it
 
 type tao_universe_calc_struct
-  logical :: rad_int_for_data = .false.           ! Do the radiation integrals need to be computed for
   integer :: srdt_for_data = 0                    ! 0 = false, 1 = 1st order, 2 = 1st & 2nd order
+  logical :: rad_int_for_data = .false.           ! Do the radiation integrals need to be computed for
   logical :: rad_int_for_plotting = .false.       !   data or plotting?
   logical :: chrom_for_data = .false.             ! Does the chromaticity need to be computed for
   logical :: chrom_for_plotting = .false.         !   data or plotting? 
