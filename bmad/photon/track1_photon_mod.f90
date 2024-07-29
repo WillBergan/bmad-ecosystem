@@ -897,6 +897,7 @@ if (ele%photon%h_misalign%active) call crystal_h_misalign (ele, orbit, h_norm)
 h_bar = h_norm * cp%wavelength / ele%value(d_spacing$)  ! H-vector B&C Eq (1) normalized by the wavelength.
 
 ! cp%new_vvec is the normalized outgoing wavevector outside the crystal
+! See B&C Eq (27) and paragraph after equation as well as Fig 10.
 
 cp%old_vvec = orbit%vec(2:6:2)             ! Incomming K-vector (real part) normalized by the wavelength                
 cp%new_vvec = orbit%vec(2:6:2) + h_bar     ! Outgoing K-vector (real part) normalized by the wavelength
@@ -918,7 +919,7 @@ cp%dtheta_sin_2theta = -dot_product(h_bar + 2 * cp%old_vvec, h_bar) / 2
 if (bmad_com%debug) then
   print '(a, 6es20.12)', 'Track to crystal surface and convert to local surface coordinates.'
   print '(a, 6es20.12)', '  orbit (x, y, z):          ', orbit%vec(1:5:2)
-  print '(a, 6es20.12)', '  orbit (Vx, Vy, Vz):       ', orbit%vec(2:6:2)
+  print '(a, 6es20.12)', '  orbit (Vx/c, Vy/c, Vz/c): ', orbit%vec(2:6:2)
   print '(a, 6es20.12)', '  field:                    ', orbit%field
   print '(a, 6es20.12)', '  h_bar (before h_misalign):', ele%photon%material%h_norm * cp%wavelength / ele%value(d_spacing$)
   print '(a, 6es20.12)', '  h_bar (after h_misalign): ', h_bar
@@ -926,7 +927,6 @@ if (bmad_com%debug) then
   print '(a, 6es20.12)', '  New V-vec:                ', cp%new_vvec
   print '(a, 6es20.12)', '  b_eff:                    ', cp%b_eff
   print '(a, 6es20.12)', '  dtheta_sin_2theta:        ', cp%dtheta_sin_2theta
-  print '(a, 6es20.12)', '  p_factor:                 ', p_factor
 endif
 
 ! E field calc
@@ -952,6 +952,8 @@ if (is_true(ele%value(use_reflectivity_table$))) then
   orbit%field(1) = orbit%field(1) * sqrt(p_pi)
   orbit%field(2) = orbit%field(2) * sqrt(p_sigma)
 
+  p_factor = real_garbage$
+
 else
   p_factor = cos(ele%value(bragg_angle_in$) + ele%value(bragg_angle_out$))
   call crystal_diffraction_field_calc (cp, ele, ele%value(thickness$), param, p_factor, .true.,  field(1), dphase(1), orbit%state, dr1)
@@ -966,14 +968,6 @@ else
   if (ele%value(b_param$) > 0 .and. (field(1) /= 0 .or. field(2) /= 0)) then ! Laue
     orbit%vec(1:5:2) = orbit%vec(1:5:2) + (dr1 * field(1) + dr2 * field(2)) / (field(1) + field(2))
   endif
-
-  if (bmad_com%debug) then
-    print '(a, 6es20.12)', 'After diffracton.'
-    print '(a, 6es20.12)', '  orbit (x, y, z):          ', orbit%vec(1:5:2)
-    print '(a, 6es20.12)', '  orbit (Vx, Vy, Vz):       ', orbit%vec(2:6:2)
-    print '(a, 6es20.12)', '  p_factor:                 ', p_factor
-    print '(a, 6es20.12)', '  field:                    ', orbit%field
-  endif
 endif
 
 ! Rotate back from curved body coords to element coords
@@ -985,12 +979,20 @@ else
   if (nint(ele%value(ref_orbit_follows$)) == bragg_diffracted$) orbit%vec(2:6:2) = cp%new_vvec
 endif
 
+if (bmad_com%debug) then
+  print '(a, 6es20.12)', 'After diffracton.'
+  print '(a, 6es20.12)', '  orbit (x, y, z):          ', orbit%vec(1:5:2)
+  print '(a, 6es20.12)', '  orbit (Vx/c, Vy/c, Vz/c): ', orbit%vec(2:6:2)
+  print '(a, 6es20.12)', '  field:                    ', orbit%field
+  if (p_factor /= real_garbage$) print '(a, 6es20.12)', '  p_factor:                 ', p_factor
+endif
+
 if (has_curvature(ele%photon)) call rotate_for_curved_surface (ele, orbit, unset$, w_surface)
 
 if (bmad_com%debug) then
   print '(a, 6es20.12)', 'Reorient to nominal surface.'
   print '(a, 6es20.12)', '  orbit (x, y, z):          ', orbit%vec(1:5:2)
-  print '(a, 6es20.12)', '  orbit (Vx, Vy, Vz):       ', orbit%vec(2:6:2)
+  print '(a, 6es20.12)', '  orbit (Vx/c, Vy/c, Vz/c): ', orbit%vec(2:6:2)
   print '(a, 6es20.12)', '  field:                    ', orbit%field
 endif
 
