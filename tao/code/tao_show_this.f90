@@ -1752,7 +1752,7 @@ case ('element')
         dt = orb%t - ele%ref_time
         pc = orb%p0c * (1 + orb%vec(6))
         call convert_pc_to (pc, orb%species, e_tot = e_tot) 
-        nl=nl+1; lines(nl) = '         Position[mm] Momentum[mrad]        Spin   |'
+        nl=nl+1; lines(nl) = '         Position[mm] Momentum[1E-3]        Spin   |'
         if (bmad_com%spin_tracking_on) then
           fmt  = '(2x, a, 2f15.8, x, a, a, es16.8, 2x, a, es12.5)'
           fmt2 = '(2x, a, 2f15.8, x, a, a, es16.8, 2x, a, f12.9)'
@@ -2125,6 +2125,7 @@ case ('global')
     nl=nl+1; write(lines(nl), lmt) '  %label_lattice_elements        = ', s%global%label_lattice_elements
     nl=nl+1; write(lines(nl), lmt) '  %label_keys                    = ', s%global%label_keys
     nl=nl+1; write(lines(nl), lmt) '  %lattice_calc_on               = ', s%global%lattice_calc_on
+    nl=nl+1; write(lines(nl), rmt) '  %max_plot_time                 = ', s%global%max_plot_time
     nl=nl+1; write(lines(nl), lmt) '  %only_limit_opt_vars           = ', s%global%only_limit_opt_vars
     nl=nl+1; write(lines(nl), lmt) '  %opt_match_auto_recalc         = ', s%global%opt_match_auto_recalc
     nl=nl+1; write(lines(nl), lmt) '  %opti_write_var_file           = ', s%global%opti_write_var_file
